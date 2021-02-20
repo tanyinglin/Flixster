@@ -2,6 +2,7 @@ package com.example.flixster.adapters;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.flixster.GlideApp;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
+
 
 import java.util.List;
 
@@ -55,25 +58,43 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         TextView tvTitle;
         TextView tvOverview;
         ImageView ivPoster;
+        ImageView fullImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
+            fullImage = itemView.findViewById(R.id.fullImage);
         }
 
         public void bind(Movie movie) {
-            tvTitle.setText(movie.getTitle());
-            tvOverview.setText(movie.getOverview());
             String imgUrl;
-            //if the phone is in landscape mode
-            if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if(movie.getRatingValue() > 5.0) {
+                Log.i("FiveStarMovie:", String.valueOf(movie.getRatingValue()));
+                Log.i("FiveStarMovie:", movie.getTitle());
                 imgUrl = movie.getBackdropPath();
+                Glide.with(context).load(imgUrl).into(fullImage);
             } else {
-                imgUrl = movie.getPosterPath();
+
+                tvTitle.setText(movie.getTitle());
+                tvOverview.setText(movie.getOverview());
+
+                //if the phone is in landscape mode
+                if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    imgUrl = movie.getBackdropPath();
+                } else {
+                    imgUrl = movie.getPosterPath();
+                }
+                Glide.with(context).load(imgUrl).into(ivPoster);
             }
-            Glide.with(context).load(imgUrl).into(ivPoster);
+
+
+//            GlideApp.with(context)
+//                    .load("http://via.placeholder.com/300.png")
+//                    .placeholder(R.drawable.ic_launcher_background)
+//                    .error(R.drawable.ic_launcher_foreground)
+//                    .into(ivPoster);
         }
     }
 }
